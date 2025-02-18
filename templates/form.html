@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Test Cases</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #42a5f5, #f48fb1);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .form-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 1000px;
+            color: #333333;
+        }
+        .jira-section {
+            margin-bottom: 20px;
+        }
+        .jira-section h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #8e24aa;
+        }
+        .jira-section input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .jira-section button {
+            padding: 8px 16px;
+            background: #00796b;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .jira-section button:hover {
+            background: #004d40;
+        }
+        .requirement-label {
+            margin-bottom: 20px;
+        }
+        .requirement-label h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #8e24aa;
+        }
+        .requirement-container {
+            padding: 10px;
+            background: #f1f8e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+            outline: none;
+            background: transparent;
+            color: #333333;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button.clear-button {
+            margin-top: 10px;
+            background: #8d28261a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button.clear-button:hover {
+            background: #d32f2f;
+        }
+        .test-case-options {
+            margin-bottom: 20px;
+        }
+        .test-case-options h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #8e24aa;
+        }
+        .scrollable-options {
+            max-height: 100px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f1f8e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .scrollable-options input {
+            margin-right: 8px;
+        }
+        .scrollable-options label {
+            display: inline-block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333333;
+        }
+        .select-all {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #00796b;
+            cursor: pointer;
+        }
+        button {
+            background: linear-gradient(90deg, #8e24aa, #5c6bc0);
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #5c6bc0, #8e24aa);
+            transform: translateY(-2px);
+        }
+    </style>
+    <script>
+        // Function to toggle "Select All" checkbox
+        function toggleSelectAll(source) {
+            const checkboxes = document.querySelectorAll('.test-case-option');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = source.checked;
+            });
+        }
+
+        // Function to clear the file input field
+        function clearFileInput() {
+            const fileInput = document.getElementById("requirement_file");
+            fileInput.value = "";
+        }
+
+        // Function to validate the form
+        function validateForm(event) {
+            const textArea = document.getElementById("code_content").value.trim();
+            const fileInput = document.getElementById("requirement_file").value;
+
+            if (!textArea && !fileInput) {
+                alert("Please provide either a functional requirement or upload a file.");
+                event.preventDefault();
+            }
+        }
+
+        // Function to fetch Jira issue description
+        function fetchJiraDescription() {
+            const issueKey = document.getElementById('jira_issue_key').value;
+            if (!issueKey) {
+                alert('Please enter a Jira issue key.');
+                return;
+            }
+
+            fetch('/fetch-jira', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `issue_key=${issueKey}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('code_content').value = data.description;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to fetch Jira issue description.');
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>JIRA TestCase Builder</h1>
+    
+    <div class="form-container">
+        <form action="/generate" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
+            <!-- Jira Issue Section -->
+            <div class="jira-section">
+                <h3>Fetch Jira Issue Description:</h3>
+                <input type="text" id="jira_issue_key" placeholder="Enter Jira Issue Key">
+                <button type="button" onclick="fetchJiraDescription()">Fetch Description</button>
+            </div>
+
+            <!-- Functional Requirement Section -->
+            <div class="requirement-label">
+                <h3>Enter your functional requirement:</h3>
+            </div>
+            <div class="requirement-container">
+                <textarea name="code_content" id="code_content" placeholder="Enter your requirement here..."></textarea>
+                <p style="margin: 10px 0; font-size: 14px; color: #666;">or attach a file:</p>
+                <input type="file" name="requirement_file" id="requirement_file" accept=".txt,.doc,.docx,.pdf,.json,.xml">
+                <button type="button" class="clear-button" onclick="clearFileInput()">Clear File</button>
+            </div>
+            
+            <!-- Test Case Selection Section -->
+            <div class="test-case-options">
+                <h3>Select test case types to generate:</h3>
+                
+                <!-- Select All Checkbox -->
+                <input type="checkbox" id="select-all" class="select-all" onclick="toggleSelectAll(this)">
+                <label for="select-all">Select All</label><br>
+                
+                <!-- Scrollable Options Container -->
+                <div class="scrollable-options">
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Positive Test Cases" id="positive">
+                    <label for="positive">Positive Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Negative Test Cases" id="negative">
+                    <label for="negative">Negative Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Boundary Value Test Cases" id="boundary">
+                    <label for="boundary">Boundary Value Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Edge Case Scenarios" id="edge">
+                    <label for="edge">Edge Case Scenarios</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Equivalence Partitioning Test Cases" id="equivalence">
+                    <label for="equivalence">Equivalence Partitioning Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Usability Test Cases" id="usability">
+                    <label for="usability">Usability Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Compatibility Test Cases" id="compatibility">
+                    <label for="compatibility">Compatibility Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Error Handling Test Cases" id="error">
+                    <label for="error">Error Handling Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Security Test Cases" id="security">
+                    <label for="security">Security Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Integration Test Cases" id="integration">
+                    <label for="integration">Integration Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Localization/Globalization Test Cases" id="localization">
+                    <label for="localization">Localization/Globalization Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Performance Test Cases" id="performance">
+                    <label for="performance">Performance Test Cases</label><br>
+                    
+                    <input type="checkbox" name="test_types" class="test-case-option" value="Workflow Test Cases" id="workflow">
+                    <label for="workflow">Workflow Test Cases</label><br>
+                </div>
+            </div>
+            
+            <button type="submit">Generate Test Cases</button>
+        </form>
+    </div>
+</body>
+</html>

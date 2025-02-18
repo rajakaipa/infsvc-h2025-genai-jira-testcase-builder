@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Test Cases</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #42a5f5, #f48fb1);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .results-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 1000px;
+            overflow-y: scroll;
+            color: #333333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f1f8e9;
+            color: #333333;
+            font-weight: bold;
+        }
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            background: linear-gradient(90deg, #8e24aa, #5c6bc0);
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #5c6bc0, #8e24aa);
+            transform: translateY(-2px);
+        }
+        .no-tests {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 Generated Test Cases 🌟</h1>
+    <div class="results-container">
+        {% if generated_tests and generated_tests|length > 0 %}
+            <table id="test-cases-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Preconditions</th>
+                        <th>Test Steps</th>
+                        <th>Expected Results</th>
+                        <th>Postconditions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in generated_tests %}
+                        <tr>
+                            <td style="white-space: pre-line;">{{ test.Title }}</td>
+                            <td style="white-space: pre-line;">{{ test.Preconditions }}</td>
+                            <td style="white-space: pre-line;">{{ test.Test_Steps }}</td>
+                            <td style="white-space: pre-line;">{{ test.Expected_Results }}</td>
+                            <td style="white-space: pre-line;">{{ test.Postconditions }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="actions">
+                <button onclick="window.history.back()">🔙 Back</button>
+                <button onclick="downloadExcel()">Download as Excel</button>
+            </div>
+        {% else %}
+            <p class="no-tests">No test cases were generated. Please go back and provide valid input.</p>
+        {% endif %}
+    </div>
+    <footer>💡 Generated using AWS Bedrock 💡</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function downloadExcel() {
+            const table = document.getElementById('test-cases-table');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Test Cases');
+
+            XLSX.writeFile(wb, 'Generated_Test_Cases.xlsx');
+        }
+    </script>
+</body>
+</html>
