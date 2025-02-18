@@ -30,13 +30,6 @@ cd test-case-generator
 Set up environment variables:
 Create a .env file in the root directory with the following variables:
 
-## plaintext
-AWS_ACCESS_KEY_ID=your_aws_access_key_id
-AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
-JIRA_DOMAIN=your_jira_domain
-API_TOKEN=your_jira_api_token
-USER_EMAIL=your_jira_user_email
-
 ## Install dependencies:
 
 pip install -r requirements.txt
@@ -91,6 +84,16 @@ python-docx: Library for reading DOCX files.
 PyPDF2: Library for reading PDF files.
 
 requests: HTTP library for making requests to Jira API.
+
+## dotenv
+
+```
+aws_access_key_id = 'your-access-key-id'  
+aws_secret_access_key = 'your-secret-access-key' 
+JIRA_DOMAIN = 'your-JIRA-Domain'
+API_TOKEN = 'Your-API-Token'
+USER_EMAIL = 'Your-Email' 
+```
 
 ## Demo video
 
