@@ -25,8 +25,7 @@ Required Python libraries (install via pip install -r requirements.txt)
 Clone the repository:
 
 
-git clone https://github.com/yourusername/test-case-generator.git
-cd test-case-generator
+git clone https://github.com/rajakaipa/infsvc-h2025-genai-jira-testcase-builder
 Set up environment variables:
 Create a .env file in the root directory with the following variables:
 
@@ -73,6 +72,7 @@ POST /generate: Processes the form data, generates test cases, and renders the r
 POST /fetch-jira: Fetches the description of a Jira issue.
 
 ## Dependecies
+```
 Flask: Web framework.
 
 boto3: AWS SDK for Python.
@@ -84,6 +84,9 @@ python-docx: Library for reading DOCX files.
 PyPDF2: Library for reading PDF files.
 
 requests: HTTP library for making requests to Jira API.
+
+python-dotenv:A Python library that helps manage environment variables by loading them from a .env file into your application's environment.
+```
 
 ## dotenv
 
